@@ -1,0 +1,58 @@
+import React, { useState } from "react";
+import LoadingButton from "../LoadingButton";
+import axiosClient from "../../../axiosClient";
+
+export default function StarShow({ isStar, note_id }) {
+  const [isLoading, setLoading] = useState(false);
+  const [star, setStar] = useState(isStar);
+
+  const clikHandler = async () => {
+    setLoading(true);
+    try {
+      let response = await axiosClient.patch(`/notes/star/id/${note_id}`);
+      if (response.status == 200) {
+        if (response.data.star == true) {
+          setStar(true);
+        } else {
+          setStar(false);
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  return (
+    <>
+      <div>
+        <button
+          disabled={isLoading ? true : false}
+          onClick={() => clikHandler()}
+          className="group rounded-full p-2 border border-slate-300 hover:bg-yellow-200/70 hover:dark:bg-slate-700 transition duration-300"
+        >
+          {isLoading ? (
+            <LoadingButton />
+          ) : (
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={1.5}
+              stroke="currentColor"
+              className={`w-5 h-5 stroke-slate-600 ${
+                star ? "fill-yellow-400" : ""
+              } dark:stroke-slate-200 group-hover:stroke-yellow-500 group-hover:fill-yellow-400 transition duration-300`}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z"
+              />
+            </svg>
+          )}
+        </button>
+      </div>
+    </>
+  );
+}
